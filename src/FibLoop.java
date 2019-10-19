@@ -5,11 +5,10 @@ import java.lang.management.ThreadMXBean;
 import java.util.Arrays;
 
 public class FibLoop {
-    //a dynamic programming version using a straight forward loop to add up numbers in the sequence and return the nth number
     static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 
     /* define constants */
-    static int numberOfTrials = 128;
+    static long numberOfTrials = 128;
 
     static String ResultsFolderPath = "/home/caitlin/Documents/Lab5/"; // pathname to results folder
     static FileWriter resultsFile;
@@ -42,7 +41,7 @@ public class FibLoop {
         resultsWriter.println("#X(value)    N(size)     T(time)"); // # marks a comment in gnuplot data
         resultsWriter.flush();
         /* for each size of input we want to test: in this case starting small and doubling the size each time */
-        for (int  i = 0;  i <= numberOfTrials; i ++) {
+        for (long  i = 0;  i <= numberOfTrials; i ++) {
             //for each integer <= 128 run a trial
             // progress message...
             System.out.println("Running test for input size " + i + " ... ");
@@ -54,21 +53,39 @@ public class FibLoop {
 
             /* force garbage collection before each batch of trials run so it is not included in the time */
             System.gc();
-
-            // run the trials
+            // run the trial
 
             TrialStopwatch.start(); // *** uncomment this line if timing trials individually
 
-            batchElapsedTime = batchElapsedTime + TrialStopwatch.elapsedTime(); // *** uncomment this line if timing trials individually
+            long size = FibLoop(i);
 
+            batchElapsedTime = batchElapsedTime + TrialStopwatch.elapsedTime(); // *** uncomment this line if timing trials individually
 
             //batchElapsedTime = BatchStopwatch.elapsedTime(); // *** comment this line if timing trials individually
             double averageTimePerTrialInBatch = (double) batchElapsedTime / (double) numberOfTrials; // calculate the average time per trial in this batch
 
             /* print data for this size of input */
-            resultsWriter.printf("%12d  %12d  %12d \n", value, size, averageTimePerTrialInBatch); // might as well make the columns look nice
+            resultsWriter.printf("%12d  %12d  %15.2f \n", i, size, averageTimePerTrialInBatch); // might as well make the columns look nice
             resultsWriter.flush();
             System.out.println(" ....done.");
         }
     }
+
+    public static long FibLoop(long X){
+        //take a single 8-byte unsigned integer and return a single 8-byte result
+
+        //a dynamic programming version using a straight forward loop to add up numbers in the sequence and return the nth number
+
+        //loop through the Fib numbers and return the X value
+        long fib1 = 1, fib2 = 1, fibonacci = 1;
+        for (int i = 3; i <= X; i++) {
+            fibonacci = fib1 + fib2; // Fibonacci number is sum of previous two Fibonacci number
+            fib1 = fib2;
+            fib2 = fibonacci;
+
+        }
+        return fibonacci; // Fibonacci number
+
+    }
+
 }
