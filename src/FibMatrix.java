@@ -13,8 +13,9 @@ public class FibMatrix {
     static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 
     /* define constants */
-    static long numberOfTrials = 128;
-
+    static int numberOfTrials = 50;
+    static int MININPUTSIZE = 0;
+    static int MAXINPUTSIZE = 128;
     static String ResultsFolderPath = "/home/caitlin/Documents/Lab5/"; // pathname to results folder
     static FileWriter resultsFile;
     static PrintWriter resultsWriter;
@@ -24,11 +25,11 @@ public class FibMatrix {
         //direct the verification test results to file
         // run the whole experiment at least twice, and expect to throw away the data from the earlier runs, before java has fully optimized
         System.out.println("Running first full experiment...");
-        runFullExperiment("FibLoop-Exp1-ThrowAway.txt");
+        runFullExperiment("FibMatrix-Exp1-ThrowAway.txt");
         System.out.println("Running second full experiment...");
-        runFullExperiment("FibLoop-Exp2.txt");
+        runFullExperiment("FibMatrix-Exp2.txt");
         System.out.println("Running third full experiment...");
-        runFullExperiment("FibLoop-Exp3.txt");
+        runFullExperiment("FibMatrix-Exp3.txt");
 
     }
 
@@ -41,36 +42,37 @@ public class FibMatrix {
             return; // not very foolproof... but we do expect to be able to create/open the file...
         }
 
+        ThreadCpuStopWatch BatchStopwatch = new ThreadCpuStopWatch(); // for timing an entire set of trials
         ThreadCpuStopWatch TrialStopwatch = new ThreadCpuStopWatch(); // for timing an individual trial
 
-        resultsWriter.println("#X(value)    N(size)     T(time)"); // # marks a comment in gnuplot data
+        resultsWriter.println("#X(value)    N(size)    T(time)"); // # marks a comment in gnuplot data
         resultsWriter.flush();
         /* for each size of input we want to test: in this case starting small and doubling the size each time */
-        for (long  i = 0;  i <= numberOfTrials; i ++) {
-            //for each integer <= 128 run a trial
+        for (int inputSize = MININPUTSIZE; inputSize <= MAXINPUTSIZE; inputSize++) {
             // progress message...
-            System.out.println("Running test for input size " + i + " ... ");
+            System.out.println("Running test for input size " + inputSize + " ... ");
 
             /* repeat for desired number of trials (for a specific size of input)... */
             long batchElapsedTime = 0;
-
-            System.out.print("    Running trial batch...");
+            // generate a list of randomly spaced integers in ascending sorted order to use as test input
+            // In this case we're generating one list to use for the entire set of trials (of a given input size)
+            // but we will randomly generate the search key for each trial
 
             /* force garbage collection before each batch of trials run so it is not included in the time */
             System.gc();
-            // run the trial
 
             TrialStopwatch.start(); // *** uncomment this line if timing trials individually
+            // run the trials
+            for (long trial = 0; trial < numberOfTrials; trial++) {
+                FibMatrix(inputSize);
 
-            long size = FibMatrix(i);
+            }
 
-            batchElapsedTime = batchElapsedTime + TrialStopwatch.elapsedTime(); // *** uncomment this line if timing trials individually
-
-            //batchElapsedTime = BatchStopwatch.elapsedTime(); // *** comment this line if timing trials individually
+            batchElapsedTime = BatchStopwatch.elapsedTime(); // *** comment this line if timing trials individually
             double averageTimePerTrialInBatch = (double) batchElapsedTime / (double) numberOfTrials; // calculate the average time per trial in this batch
 
             /* print data for this size of input */
-            resultsWriter.printf("%12d  %12d  %15.2f \n", i, size, averageTimePerTrialInBatch); // might as well make the columns look nice
+            resultsWriter.printf("%12d  %12d  %15.2f \n", inputSize, Long.toBinaryString(inputSize).length(), averageTimePerTrialInBatch); // might as well make the columns look nice
             resultsWriter.flush();
             System.out.println(" ....done.");
         }
