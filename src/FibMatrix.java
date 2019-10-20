@@ -4,12 +4,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
 public class FibMatrix {
-    //reminder: towards end of video, y would be the variable we want the fibonacci of  (we want fib(y) there)
-    //See the matrix multiplication method from exercise 0.4 in Algorithms (DPV)
-    //Write a helper function called by MatrixPower that efficiently calculates powers of a matrix
-    //which, in trun needs a helper function to do simple matrix multiplication
-    //Calculating MX should take O(log2(X)) matrix multiplications instead of the naïve O(X).
-      //Note that because the size (number of bits) of N ~ log2(X), calculating MX should take O(N) multiplications.
+
     static ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 
     /* define constants */
@@ -79,19 +74,41 @@ public class FibMatrix {
     }
 
     public static long FibMatrix(long X){
+        long F[][] = new long[][]{{1,1},{1,0}};
+        if (X== 0)
+            return 0;
+        MatrixPower(F, X-1);
+
+        return F[0][0];
         //take a single 8-byte unsigned integer and return a single 8-byte result
 
-        //a dynamic programming version using a straight forward loop to add up numbers in the sequence and return the nth number
+        //reminder: towards end of video, y would be the variable we want the fibonacci of  (we want fib(y) there)
 
-        //loop through the Fib numbers and return the X value
-        long fib1 = 1, fib2 = 1, fibonacci = 1;
-        for (int i = 3; i <= X; i++) {
-            fibonacci = fib1 + fib2; // Fibonacci number is sum of previous two Fibonacci number
-            fib1 = fib2;
-            fib2 = fibonacci;
+        //Calculating MX should take O(log2(X)) matrix multiplications instead of the naïve O(X).
+        //Note that because the size (number of bits) of N ~ log2(X), calculating MX should take O(N) multiplications.
 
-        }
-        return fibonacci; // Fibonacci number
+    }
 
+    public static void MatrixPower(long F[][], long X){
+        //Write a helper function called by MatrixPower that efficiently calculates powers of a matrix
+        int i;
+        long M[][] = new long[][]{{1,1},{1,0}};
+
+        // n - 1 times multiply the matrix to {{1,0},{0,1}}
+        for (i = 2; i <= X; i++)
+            MatrixMultiplication(F, M);
+    }
+
+    public static void MatrixMultiplication(long F[][], long M[][]){
+        //which, in trun needs a helper function to do simple matrix multiplication
+        long x =  F[0][0]*M[0][0] + F[0][1]*M[1][0];
+        long y =  F[0][0]*M[0][1] + F[0][1]*M[1][1];
+        long z =  F[1][0]*M[0][0] + F[1][1]*M[1][0];
+        long w =  F[1][0]*M[0][1] + F[1][1]*M[1][1];
+
+        F[0][0] = x;
+        F[0][1] = y;
+        F[1][0] = z;
+        F[1][1] = w;
     }
 }

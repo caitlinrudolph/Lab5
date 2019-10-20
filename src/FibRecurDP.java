@@ -80,15 +80,15 @@ public class FibRecurDP {
         //When used in recursive functions, "dynamic programming" means caching results to be re-used later.
         //make sure you wipe clean the "global" table of prior for each run…
         //reallocate new cache
-        long FibResultsCache[] = new long[];
+        //long FibResultsCache[] = new long[];
         long FibResultAvailable[] = {0};
 
-        long result = FibRecursiveWithCache(X);
+        long result = 0;//FibRecursiveWithCache(X);
             //free cache
         return result;
     }
 
-    public static long FibRecursiveWithCache(long X) {
+    /*public static long FibRecursiveWithCache(long X) {
         if (X < 2)
         {
             return 1;
@@ -106,5 +106,5 @@ public class FibRecurDP {
 
             return result;
         }
-    }
+    } */
 }
